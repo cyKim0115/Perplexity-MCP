@@ -1,0 +1,27 @@
+{
+  "name": "perplexity-session-mcp",
+  "version": "0.1.0",
+  "description": "Perplexity MCP server that logs in with your own Perplexity account (browser session, no API key): search, deep research, and searchable answer history.",
+  "type": "module",
+  "license": "MIT",
+  "private": true,
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "start": "node src/index.ts serve",
+    "login": "node src/index.ts login",
+    "status": "node src/index.ts status",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "patchright": "^1.63.0",
+    "zod": "^4.6.6"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "typescript": "^5.9.3"
+  }
+}
