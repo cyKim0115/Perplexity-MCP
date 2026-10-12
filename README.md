@@ -42,20 +42,23 @@ npm run status    # 로그인 계정·요금제·남은 Pro Search·Research 횟
 평소 쓰는 Chrome 프로필이나 그 쿠키는 읽지 않습니다.
 
 ```mermaid
-flowchart LR
+flowchart TB
   subgraph L["로그인 (처음 한 번)"]
-    A["perplexity_login"] --> B["전용 프로필 Chrome 창"]
+    direction LR
+    A["perplexity_login"] --> B["전용 프로필<br/>Chrome 창"]
     B -->|"사용자가 직접 로그인"| C["세션 쿠키 감지"]
     C --> D["perplexity.ai 쿠키만 골라<br/>AES-256-GCM 암호화"]
   end
-  D --> S[("session.enc<br/>master.key (DPAPI)")]
+  S[("session.enc + master.key (DPAPI)")]
   subgraph R["검색·딥리서치 (매번)"]
+    direction LR
     F["MCP 도구 호출"] --> G["헤드리스 Chrome에<br/>저장된 쿠키 주입"]
     G --> H["perplexity.ai 페이지 안에서<br/>fetch로 API 호출"]
-    H --> I["답변·출처를 history/에 저장"]
+    H --> I["답변·출처를<br/>history/에 저장"]
   end
-  S --> G
-  G -. "갱신된 쿠키 다시 저장" .-> S
+  L -- "저장" --> S
+  S -- "불러오기" --> R
+  R -. "갱신된 쿠키 다시 저장" .-> S
 ```
 
 1. 로그인 창은 perplexity.ai가 Cloudflare 확인을 통과할 때까지 기다린 뒤 로그인을 기다립니다(기본 5분).
