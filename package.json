@@ -5,6 +5,11 @@
   "type": "module",
   "license": "MIT",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cyKim0115/Perplexity-MCP.git"
+  },
+  "homepage": "https://github.com/cyKim0115/Perplexity-MCP#readme",
   "engines": {
     "node": ">=22.18.0"
   },
