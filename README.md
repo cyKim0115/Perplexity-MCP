@@ -1,5 +1,7 @@
 # Perplexity Session MCP
 
+[![M8ven Score](https://m8ven.ai/badge/mcp/cykim0115-perplexity-mcp-18de73?v=9f452af1168a3370d231c62a5e6b8344)](https://m8ven.ai/mcp/cykim0115-perplexity-mcp-18de73?s=readme)
+
 내 Perplexity 계정에 로그인한 **브라우저 세션**으로 검색·딥리서치를 쓰는 MCP 서버입니다. API 키가 필요 없고, Pro 요금제라면 Pro Search·Deep Research 할당량을 그대로 씁니다.
 Claude Code·Codex·Cursor·Claude Desktop 같은 MCP 클라이언트에 붙여 씁니다.
 
@@ -9,7 +11,8 @@ Claude Code·Codex·Cursor·Claude Desktop 같은 MCP 클라이언트에 붙여 
 
 [빠른 시작](#빠른-시작) · [로그인과 세션](#로그인과-세션) · [클라이언트 등록](#mcp-클라이언트-등록) · [도구](#도구) · [사용 예](#사용-예) · [데이터와 보안](#데이터와-보안) · [동작 원리](#동작-원리)
 
-> Perplexity의 공개 API가 아니라 웹 앱이 쓰는 내부 API를 호출하는 비공식 도구입니다. 사이트가 바뀌면 깨질 수 있습니다.
+> **비공식 도구입니다.** Perplexity 공식 API가 아니라 웹 앱이 쓰는 내부 API를 호출하므로 사이트가 바뀌면 깨질 수 있습니다.
+> 이런 자동화 사용은 Perplexity 이용 약관에 어긋날 수 있으며, 계정 제한 등 사용에 따른 책임은 사용자 본인에게 있습니다.
 
 ---
 
@@ -122,6 +125,9 @@ tool_timeout_sec = 3700   # 딥리서치 대기(최대 3600초)보다 길게
 | `perplexity_library_search` | perplexity.ai 라이브러리(웹·앱에서 만든 스레드 포함) 검색 |
 | `perplexity_thread_get` | 라이브러리 스레드 전체 불러오기(딥리서치는 보고서 전문) + 로컬 히스토리에 저장 |
 
+도구마다 MCP 힌트 4종(`readOnlyHint`·`destructiveHint`·`idempotentHint`·`openWorldHint`)을 모두 적어 두어, 클라이언트가 읽기 전용 도구와 지우는 도구를 구분할 수 있습니다.
+지우는 도구는 로컬 세션 파일을 지우는 `perplexity_logout`뿐이고, `perplexity_history_*`와 `perplexity_logout`은 네트워크를 쓰지 않습니다.
+
 리소스 `perplexity-history://{id}`로 저장된 답변을 Markdown 그대로 첨부할 수도 있습니다.
 
 ## 사용 예
@@ -163,6 +169,7 @@ node src/index.ts logout [--wipe]
 ## 데이터와 보안
 
 모든 데이터는 `~/.perplexity-session-mcp/`(환경 변수 `PPLX_MCP_HOME`으로 변경)에 있습니다. 이 폴더는 저장소 밖이며 커밋되지 않습니다.
+세션 쿠키는 이 PC에만 저장되고 perplexity.ai 페이지 안에서만 쓰입니다. 이 서버는 텔레메트리를 수집하지 않으며, 세션이나 답변 기록을 다른 서버로 보내지 않습니다.
 
 | 경로 | 내용 |
 | --- | --- |
@@ -203,7 +210,7 @@ Perplexity 웹 API(`/rest/sse/perplexity_ask` 등)는 Cloudflare 뒤에 있어 �
 ## 개발
 
 ```bash
-npm test             # 파서·스트림 복구·히스토리·포맷 단위 테스트
+npm test             # 파서·스트림 복구·히스토리·포맷 + 도구 11개 MCP 호출 테스트 (브라우저·네트워크 없음)
 npm run typecheck
 node scripts/smoke-client.mjs '[["perplexity_account",{}]]'   # 실제 MCP 클라이언트처럼 stdio로 호출
 node scripts/parse-sse.ts <capture.sse>                        # PPLX_DEBUG=1로 저장한 스트림 재해석
