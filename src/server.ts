@@ -100,15 +100,14 @@ export function createServer(svc: Service): McpServer {
   };
 
   // Every tool spells out all four MCP hints as literals (directories reject tools that
-  // leave one out); test/tools.test.ts pins the values.
+  // leave one out); test/tools.test.ts pins the values. Descriptions stay single string
+  // literals: static scanners such as M8ven do not read ones joined with `+`.
   server.registerTool(
     "perplexity_login",
     {
       title: "Log in to Perplexity",
       description:
-        "Open a browser window on perplexity.ai so the user can sign in (email code, Google, Apple, SSO). " +
-        "Waits until sign-in completes, then saves the session encrypted on disk for all later calls. " +
-        "Tell the user to look for the browser window before calling. A second call while the window is open waits for the same login.",
+        "Open a browser window on perplexity.ai so the user can sign in (email code, Google, Apple, SSO). Waits until sign-in completes, then saves the session encrypted on disk for all later calls. Tell the user to look for the browser window before calling. A second call while the window is open waits for the same login.",
       inputSchema: {
         timeout_seconds: z.number().int().min(30).max(1800).optional().describe("How long to wait for the user (default 300)."),
       },
@@ -161,9 +160,7 @@ export function createServer(svc: Service): McpServer {
     {
       title: "Perplexity search",
       description:
-        "Ask Perplexity a question and get a web-grounded answer with numbered sources. " +
-        "Uses Pro Search automatically on paid plans. The answer is saved to local history (history_id in the footer). " +
-        "Use follow_up_id (a history_id, or a Perplexity thread URL/slug) to ask a follow-up in the same thread.",
+        "Ask Perplexity a question and get a web-grounded answer with numbered sources. Uses Pro Search automatically on paid plans. The answer is saved to local history (history_id in the footer). Use follow_up_id (a history_id, or a Perplexity thread URL/slug) to ask a follow-up in the same thread.",
       inputSchema: {
         query: z.string().min(1).describe("The question or search query."),
         style: z
@@ -195,10 +192,7 @@ export function createServer(svc: Service): McpServer {
     {
       title: "Perplexity deep research",
       description:
-        "Run Perplexity Deep Research: many searches plus a long, cited report (usually 2–10 minutes; uses one of the account's limited research runs). " +
-        "Waits up to wait_seconds; if still running it returns a job_id for perplexity_research_status. " +
-        "If this call is interrupted or times out, do NOT call it again for the same question: call perplexity_research_status " +
-        "(without job_id it lists running jobs). The finished report is always saved to local history.",
+        "Run Perplexity Deep Research: many searches plus a long, cited report (usually 2–10 minutes; uses one of the account's limited research runs). Waits up to wait_seconds; if still running it returns a job_id for perplexity_research_status. If this call is interrupted or times out, do NOT call it again for the same question: call perplexity_research_status (without job_id it lists running jobs). The finished report is always saved to local history.",
       inputSchema: {
         query: z.string().min(1).describe("The research question. Be specific about scope and what the report should cover."),
         sources: sourcesSchema,
@@ -231,8 +225,7 @@ export function createServer(svc: Service): McpServer {
     {
       title: "Deep research status",
       description:
-        "Check a deep research job started by perplexity_research and return the report once it is done; also recovers jobs " +
-        "whose server restarted or whose stream dropped (a recovered report is saved to local history). Omit job_id to list recent jobs.",
+        "Check a deep research job started by perplexity_research and return the report once it is done; also recovers jobs whose server restarted or whose stream dropped (a recovered report is saved to local history). Omit job_id to list recent jobs.",
       inputSchema: {
         job_id: z.string().optional().describe("The job_id returned by perplexity_research."),
         wait_seconds: z.number().int().min(0).max(1800).optional().describe("Block up to this many seconds for completion (default 0)."),
@@ -251,8 +244,7 @@ export function createServer(svc: Service): McpServer {
     {
       title: "Search saved answers",
       description:
-        "Full-text search over every answer and research report saved locally (query, answer text, source titles/URLs). " +
-        'All terms must match; "quoted phrases" stay together. Empty query lists the most recent answers. Returns ids and snippets.',
+        "Full-text search over every answer and research report saved locally (query, answer text, source titles/URLs). All terms must match; wrap words in double quotes to match them as one phrase. Empty query lists the most recent answers. Returns ids and snippets.",
       inputSchema: {
         query: z.string().describe("Search terms (Korean and English both work; substring match). Empty lists recent answers."),
         kind: z.enum(["search", "research", "thread"]).optional().describe("Only this kind of entry."),
@@ -269,8 +261,7 @@ export function createServer(svc: Service): McpServer {
     {
       title: "Open a saved answer",
       description:
-        "Return a saved answer/report in full with its sources. Long reports come in pages: continue with the offset the response gives. " +
-        "sources_only=true lists every source with its [n] number.",
+        "Return a saved answer/report in full with its sources. Long reports come in pages: continue with the offset the response gives. sources_only=true lists every source with its [n] number.",
       inputSchema: {
         id: z.string().describe("history_id from a search result footer or perplexity_history_search."),
         offset: z.number().int().min(0).optional().describe("Character offset to start from (default 0)."),
@@ -288,8 +279,7 @@ export function createServer(svc: Service): McpServer {
     {
       title: "Search Perplexity library",
       description:
-        "Search the user's Perplexity library on perplexity.ai (all threads, including ones made in the browser or apps). " +
-        "Empty query lists the newest threads.",
+        "Search the user's Perplexity library on perplexity.ai (all threads, including ones made in the browser or apps). Empty query lists the newest threads.",
       inputSchema: {
         query: z.string().optional().describe("Search term; empty lists recent threads."),
         limit: z.number().int().min(1).max(100).optional().describe("Max threads (default 20)."),
@@ -305,9 +295,7 @@ export function createServer(svc: Service): McpServer {
     {
       title: "Read a Perplexity thread",
       description:
-        "Fetch a whole thread from the user's Perplexity library by slug or URL (all questions and answers with sources; " +
-        "deep research entries come back as their full report). By default also saves it to local history so it becomes " +
-        "searchable and usable for follow-ups.",
+        "Fetch a whole thread from the user's Perplexity library by slug or URL (all questions and answers with sources; deep research entries come back as their full report). By default also saves it to local history so it becomes searchable and usable for follow-ups.",
       inputSchema: {
         slug: z.string().describe("Thread slug or https://www.perplexity.ai/search/... URL."),
         save: z.boolean().optional().describe("Save into local history (default true)."),

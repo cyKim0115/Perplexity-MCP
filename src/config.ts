@@ -19,8 +19,8 @@ export const paths = {
   debugDir: join(DATA_DIR, "debug"),
 };
 
-function envNumber(name: string, fallback: number): number {
-  const raw = process.env[name];
+/** Callers pass `process.env.NAME` itself (not the name) so scanners can list every variable read. */
+function envNumber(raw: string | undefined, fallback: number): number {
   if (raw === undefined || raw.trim() === "") return fallback;
   const n = Number(raw);
   return Number.isFinite(n) ? n : fallback;
@@ -32,12 +32,12 @@ export const settings = {
   /** Explicit browser executable; otherwise Chrome → Edge → patchright's bundled Chromium. */
   browserPath: process.env.PPLX_BROWSER_PATH || "",
   /** Close the runtime browser after this much idle time (0 = keep it open). */
-  idleCloseMs: envNumber("PPLX_IDLE_CLOSE_MS", 10 * 60_000),
+  idleCloseMs: envNumber(process.env.PPLX_IDLE_CLOSE_MS, 10 * 60_000),
   language: process.env.PPLX_LANGUAGE || "en-US",
   searchModel: process.env.PPLX_SEARCH_MODEL || "pplx_pro",
   researchModel: process.env.PPLX_RESEARCH_MODEL || "pplx_alpha",
   /** Hard cap for one streamed answer (deep research can take 10+ minutes). */
-  askTimeoutMs: envNumber("PPLX_ASK_TIMEOUT_MS", 40 * 60_000),
+  askTimeoutMs: envNumber(process.env.PPLX_ASK_TIMEOUT_MS, 40 * 60_000),
   /** Save raw SSE streams to the debug dir. */
   debug: process.env.PPLX_DEBUG === "1",
 };
