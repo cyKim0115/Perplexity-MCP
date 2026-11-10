@@ -99,6 +99,8 @@ export function createServer(svc: Service): McpServer {
     if (server.isConnected()) server.sendResourceListChanged();
   };
 
+  // Every tool spells out all four MCP hints as literals (directories reject tools that
+  // leave one out); test/tools.test.ts pins the values.
   server.registerTool(
     "perplexity_login",
     {
@@ -110,7 +112,7 @@ export function createServer(svc: Service): McpServer {
       inputSchema: {
         timeout_seconds: z.number().int().min(30).max(1800).optional().describe("How long to wait for the user (default 300)."),
       },
-      annotations: { openWorldHint: true },
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
     },
     async ({ timeout_seconds }, extra) =>
       withProgress(extra, 1000, (progress) => svc.login(timeout_seconds ?? 300, progress && ((m) => progress(m, 0)))),
@@ -125,7 +127,7 @@ export function createServer(svc: Service): McpServer {
       inputSchema: {
         wipe_browser_profile: z.boolean().optional().describe("Also sign out the login browser window and delete the encryption key."),
       },
-      annotations: { destructiveHint: true },
+      annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     },
     async ({ wipe_browser_profile }) => guard(() => svc.logout(wipe_browser_profile ?? false)),
   );
@@ -138,7 +140,7 @@ export function createServer(svc: Service): McpServer {
       inputSchema: {
         refresh: z.boolean().optional().describe("Fetch fresh numbers from Perplexity instead of the cached snapshot (default true)."),
       },
-      annotations: { readOnlyHint: true, openWorldHint: true },
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     },
     async ({ refresh }) => guard(() => svc.accountReport(refresh ?? true)),
   );
@@ -149,7 +151,7 @@ export function createServer(svc: Service): McpServer {
       title: "List models",
       description: "List the model ids this account can pass as `model` to perplexity_search.",
       inputSchema: {},
-      annotations: { readOnlyHint: true, openWorldHint: true },
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     },
     async () => guard(() => svc.modelsReport()),
   );
@@ -175,7 +177,7 @@ export function createServer(svc: Service): McpServer {
         follow_up_id: z.string().optional().describe("history_id or thread URL/slug to continue."),
         max_chars: maxCharsSchema,
       },
-      annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true },
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
     },
     async ({ query, style, model, sources, recency, language, follow_up_id, max_chars }, extra) =>
       withProgress(extra, 2500, async (progress) =>
@@ -211,7 +213,7 @@ export function createServer(svc: Service): McpServer {
           .describe("Max seconds to block before returning a job_id (default 600). Use 0 to start it in the background."),
         max_chars: maxCharsSchema,
       },
-      annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true },
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
     },
     async ({ query, sources, language, follow_up_id, wait_seconds, max_chars }, extra) =>
       withProgress(extra, 5000, async (progress) =>
@@ -230,13 +232,13 @@ export function createServer(svc: Service): McpServer {
       title: "Deep research status",
       description:
         "Check a deep research job started by perplexity_research and return the report once it is done; also recovers jobs " +
-        "whose server restarted or whose stream dropped. Omit job_id to list recent jobs.",
+        "whose server restarted or whose stream dropped (a recovered report is saved to local history). Omit job_id to list recent jobs.",
       inputSchema: {
         job_id: z.string().optional().describe("The job_id returned by perplexity_research."),
         wait_seconds: z.number().int().min(0).max(1800).optional().describe("Block up to this many seconds for completion (default 0)."),
         max_chars: maxCharsSchema,
       },
-      annotations: { readOnlyHint: true, openWorldHint: true },
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     },
     async ({ job_id, wait_seconds, max_chars }, extra) =>
       withProgress(extra, 5000, (progress) =>
@@ -257,7 +259,7 @@ export function createServer(svc: Service): McpServer {
         since: z.string().optional().describe("Only entries created on/after this date: 2026-10-01 (local midnight) or an ISO date-time."),
         limit: z.number().int().min(1).max(50).optional().describe("Max results (default 10)."),
       },
-      annotations: { readOnlyHint: true },
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     async ({ query, kind, since, limit }) => guard(() => svc.historySearchReport({ query, kind, since, limit })),
   );
@@ -275,7 +277,7 @@ export function createServer(svc: Service): McpServer {
         max_chars: maxCharsSchema,
         sources_only: z.boolean().optional().describe("Return the full numbered source list instead of the answer."),
       },
-      annotations: { readOnlyHint: true },
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     async ({ id, offset, max_chars, sources_only }) =>
       guard(() => svc.historyGet({ id, offset, maxChars: max_chars, sourcesOnly: sources_only })),
@@ -293,7 +295,7 @@ export function createServer(svc: Service): McpServer {
         limit: z.number().int().min(1).max(100).optional().describe("Max threads (default 20)."),
         offset: z.number().int().min(0).optional().describe("Paging offset (default 0)."),
       },
-      annotations: { readOnlyHint: true, openWorldHint: true },
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     },
     async ({ query, limit, offset }) => guard(() => svc.librarySearch({ query, limit, offset })),
   );
@@ -311,7 +313,7 @@ export function createServer(svc: Service): McpServer {
         save: z.boolean().optional().describe("Save into local history (default true)."),
         max_chars: maxCharsSchema,
       },
-      annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true },
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     },
     async ({ slug, save, max_chars }) => guard(() => svc.threadGet({ slug, save: save ?? true, maxChars: max_chars })),
   );
