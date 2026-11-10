@@ -1,5 +1,6 @@
 # Perplexity Session MCP
 
+[![CI](https://github.com/cyKim0115/Perplexity-MCP/actions/workflows/ci.yml/badge.svg)](https://github.com/cyKim0115/Perplexity-MCP/actions/workflows/ci.yml)
 [![M8ven Score](https://m8ven.ai/badge/mcp/cykim0115-perplexity-mcp-18de73?v=be73b853882bdef9f8cdbf747e561172)](https://m8ven.ai/mcp/cykim0115-perplexity-mcp-18de73?s=readme)
 
 내 Perplexity 계정에 로그인한 **브라우저 세션**으로 검색·딥리서치를 쓰는 MCP 서버입니다. API 키가 필요 없고, Pro 요금제라면 Pro Search·Deep Research 할당량을 그대로 씁니다.
@@ -196,13 +197,13 @@ Perplexity 웹 API(`/rest/sse/perplexity_ask` 등)는 Cloudflare 뒤에 있어 �
 
 | 변수 | 기본값 | 설명 |
 | --- | --- | --- |
-| `PPLX_MCP_HOME` | `~/.perplexity-session-mcp` | 데이터 폴더 |
+| `PPLX_MCP_HOME` | `~/.perplexity-session-mcp` | 데이터 폴더 (세션·답변 기록·딥리서치 작업이 저장되는 곳) |
 | `PPLX_HEADLESS` | `1` | `0`이면 작업용 브라우저를 화면 밖 창으로 띄움 (Cloudflare가 헤드리스를 막을 때) |
 | `PPLX_BROWSER_PATH` | | 브라우저 실행 파일 직접 지정 |
 | `PPLX_IDLE_CLOSE_MS` | `600000` | 유휴 시 브라우저 종료까지 시간 (0이면 유지) |
 | `PPLX_LANGUAGE` | `en-US` | Perplexity에 보내는 로캘 |
 | `PPLX_SEARCH_MODEL` | `pplx_pro` | 유료 요금제 기본 검색 모델 |
-| `PPLX_RESEARCH_MODEL` | `pplx_alpha` | 딥리서치 모델 |
+| `PPLX_RESEARCH_MODEL` | `pplx_alpha` | `perplexity_research`가 쓰는 딥리서치 모델 |
 | `PPLX_ASK_TIMEOUT_MS` | `2400000` | 딥리서치 한 건의 최대 스트림 대기 시간 (검색은 5분과 이 값 중 작은 쪽) |
 | `PPLX_MAX_OUTPUT_TOKENS` | `16000` | 한 번에 돌려주는 답변 분량(대략의 토큰 수) |
 | `PPLX_DEBUG` | | `1`이면 원본 SSE를 `debug/`에 저장 |
@@ -217,6 +218,7 @@ node scripts/parse-sse.ts <capture.sse>                        # PPLX_DEBUG=1로
 ```
 
 딥리서치는 하루 횟수가 적으니, 파서를 고칠 때는 새로 호출하기보다 저장해 둔 스트림으로 확인하세요.
+push와 PR마다 GitHub Actions가 Node 22·24에서 타입체크와 테스트를 돌립니다.
 
 ## 주의
 
