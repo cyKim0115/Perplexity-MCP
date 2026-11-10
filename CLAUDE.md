@@ -4,7 +4,8 @@ Perplexity MCP server that drives the user's own logged-in web session (no API k
 
 ## Run / check
 
-- `npm test` (node:test, pure units: SSE parser, history store) · `npm run typecheck`
+- `npm test` (node:test: SSE parser, history store, and all 11 tools through an in-memory MCP client on a scratch `PPLX_MCP_HOME`, no browser) · `npm run typecheck`
+- Every tool spells out all four hints (`readOnlyHint`/`destructiveHint`/`idempotentHint`/`openWorldHint`) as literals; `test/tools.test.ts` pins them, so a new or changed tool needs its row there.
 - Node ≥ 22.18 runs `src/*.ts` directly (type stripping): keep syntax erasable — no enums, no parameter properties, relative imports end in `.ts`.
 - Live checks spend the account's quotas (deep research is only a few per day): prefer `node scripts/parse-sse.ts <capture.sse>` on streams saved with `PPLX_DEBUG=1` over new live runs.
 - `node scripts/smoke-client.mjs '[["tool",{args}]]'` drives the server over stdio like a real MCP client.
