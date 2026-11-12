@@ -8,6 +8,7 @@ Perplexity MCP server that drives the user's own logged-in web session (no API k
 - Every tool spells out all four hints (`readOnlyHint`/`destructiveHint`/`idempotentHint`/`openWorldHint`) as literals; `test/tools.test.ts` pins them, so a new or changed tool needs its row there.
 - Keep what static scanners (M8ven) read plain: tool descriptions are single string literals (no `+` joins) and env vars are read as `process.env.NAME`. CI (`.github/workflows/ci.yml`) runs typecheck + tests on Node 22 and 24.
 - Node ≥ 22.18 runs `src/*.ts` directly (type stripping): keep syntax erasable — no enums, no parameter properties, relative imports end in `.ts`.
+- `pplx` (bin/pplx.js) runs `src/` in a linked clone and `dist/` in the npm package: Node refuses type stripping under node_modules, so `npm pack`/`publish` build `dist/` first (`prepack` → `npm run build`) and ship only `bin/` + `dist/`. The version comes from package.json (`PACKAGE_VERSION`); bump it with `npm version`.
 - Live checks spend the account's quotas (deep research is only a few per day): prefer `node scripts/parse-sse.ts <capture.sse>` on streams saved with `PPLX_DEBUG=1` over new live runs.
 - `node scripts/smoke-client.mjs '[["tool",{args}]]'` drives the server over stdio like a real MCP client.
 

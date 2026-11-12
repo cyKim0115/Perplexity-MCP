@@ -27,21 +27,53 @@ Claude Code·Codex·Cursor·Claude Desktop 같은 MCP 클라이언트에 붙여 
 
 ## 빠른 시작
 
-준비물: [Node.js](https://nodejs.org/) **22.18 이상**(TypeScript 소스를 빌드 없이 바로 실행), Google Chrome(없으면 Edge, 둘 다 없으면 `npx patchright install chromium`).
+준비물: [Node.js](https://nodejs.org/) **22.18 이상**, Google Chrome(없으면 Edge, 둘 다 없으면 `npx patchright install chromium`).
+
+```bash
+npm install -g perplexity-session-mcp
+pplx login
+claude mcp add perplexity-session -s user -- pplx
+```
+
+1. 설치하면 어느 폴더에서든 `pplx` 명령을 쓸 수 있습니다.
+2. `pplx login`을 실행하면 Chrome 창이 열립니다. Perplexity에 로그인하면 창이 저절로 닫힙니다.
+3. Claude Code에 MCP 서버로 등록합니다. Windows에서는 마지막 줄을 `-- cmd /c pplx`로 씁니다. 다른 클라이언트는 [클라이언트 등록](#mcp-클라이언트-등록)을 보세요.
+
+로그인은 클라이언트 안에서 `perplexity_login` 도구로 해도 같은 창이 열립니다.
+
+### 내 계정 직접 관리하기
+
+AI를 거치지 않고 터미널에서 직접 실행합니다. Claude Code 입력창에서는 앞에 `!`를 붙이면(`! pplx status`) 셸에서 바로 실행됩니다.
+
+| 명령 | 하는 일 |
+| --- | --- |
+| `pplx status` | 로그인 계정·요금제·남은 Pro Search·Research 횟수 |
+| `pplx login` | 로그인 창을 열어 다시 로그인 |
+| `pplx logout` | 저장된 세션 삭제 (`--wipe`면 로그인 프로필·암호화 키까지) |
+| `pplx -v` | 설치된 버전 |
+
+### 업데이트
+
+```bash
+npm install -g perplexity-session-mcp@latest
+```
+
+CLI는 바로 새 버전이 됩니다. 이미 떠 있는 MCP 서버는 클라이언트를 다시 시작하거나 Claude Code에서 `/mcp`로 다시 연결하면 바뀝니다. 로그인 세션은 그대로 유지됩니다.
+
+### 소스에서 실행 (개발용)
 
 ```bash
 git clone https://github.com/cyKim0115/Perplexity-MCP.git
 cd Perplexity-MCP
 npm install
-npm run login     # Chrome 창이 열리면 Perplexity에 로그인 → 창이 저절로 닫힘
-npm run status    # 로그인 계정·요금제·남은 Pro Search·Research 횟수
+npm link
 ```
 
-그다음 [쓰는 클라이언트에 등록](#mcp-클라이언트-등록)합니다. 클라이언트 안에서 `perplexity_login` 도구를 불러도 같은 로그인 창이 열립니다.
+`npm link`를 하면 `pplx`가 이 폴더의 TypeScript 소스를 빌드 없이 바로 실행합니다. 그래서 `git pull`만 해도 새 코드가 반영됩니다.
 
 ## 로그인과 세션
 
-`npm run login`(또는 `perplexity_login`)을 실행하면 **확장도 북마크도 Google 로그인도 없는 Chrome 창**이 뜹니다.
+`pplx login`(또는 `perplexity_login`)을 실행하면 **확장도 북마크도 Google 로그인도 없는 Chrome 창**이 뜹니다.
 게스트 창처럼 보이지만 Chrome 게스트 모드가 아니라, 이 도구 전용 프로필(`~/.perplexity-session-mcp/login-profile/`)로 띄운 실제 Chrome입니다.
 평소 쓰는 Chrome 프로필이나 그 쿠키는 읽지 않습니다.
 
@@ -71,24 +103,25 @@ flowchart TB
 4. 실제 검색은 별도의 헤드리스 Chrome이 저장된 쿠키로 합니다. 로그인 창의 프로필은 남겨 두므로 다음 재로그인은 대개 클릭 한 번입니다.
 
 여러 클라이언트가 동시에 서버를 띄워도 세션 파일 하나를 함께 씁니다. 한쪽에서 다시 로그인하면 나머지가 다음 호출 때 새 쿠키로 바꿔 끼웁니다.
-Windows에서 세션 파일은 DPAPI로 현재 사용자에게 묶여 있어 **다른 PC로 복사해도 풀리지 않습니다.** 새 PC에서는 `npm run login`을 한 번 실행하세요.
+Windows에서 세션 파일은 DPAPI로 현재 사용자에게 묶여 있어 **다른 PC로 복사해도 풀리지 않습니다.** 새 PC에서는 `pplx login`을 한 번 실행하세요.
 
 ## MCP 클라이언트 등록
 
-아래 경로는 이 저장소를 받은 위치로 바꿔 주세요. 클라이언트가 nvm 등으로 설치한 `node`를 찾지 못하면 `node` 대신 절대 경로(`where node` 결과)를 씁니다.
+`pplx`를 설치한 뒤 MCP 서버 명령으로 `pplx`를 씁니다. Windows에서는 `.cmd` 파일을 바로 실행하지 못하는 클라이언트가 많아서 `cmd /c pplx`로 띄웁니다.
+[소스에서 실행](#소스에서-실행-개발용)할 때도 `npm link`를 했다면 똑같이 등록합니다.
 
 **Claude Code**
 
 ```bash
-claude mcp add perplexity-session -s user -- node C:/Users/<you>/repo/Perplexity-MCP/src/index.ts
+claude mcp add perplexity-session -s user -- pplx           # macOS·Linux
+claude mcp add perplexity-session -s user -- cmd /c pplx    # Windows
 ```
 
 **Codex** (`~/.codex/config.toml`)
 
 ```toml
 [mcp_servers.perplexity-session]
-command = "node"
-args = [ "C:\\Users\\<you>\\repo\\Perplexity-MCP\\src\\index.ts" ]
+command = "pplx"          # Windows: command = "cmd", args = ["/c", "pplx"]
 startup_timeout_sec = 60
 tool_timeout_sec = 3700   # 딥리서치 대기(최대 3600초)보다 길게
 ```
@@ -99,12 +132,15 @@ tool_timeout_sec = 3700   # 딥리서치 대기(최대 3600초)보다 길게
 {
   "mcpServers": {
     "perplexity-session": {
-      "command": "node",
-      "args": ["C:/Users/<you>/repo/Perplexity-MCP/src/index.ts"]
+      "command": "cmd",
+      "args": ["/c", "pplx"]
     }
   }
 }
 ```
+
+위는 Windows 예시입니다. macOS·Linux에서는 `"command": "pplx"`만 적고 `args`는 뺍니다.
+클라이언트가 `pplx`를 찾지 못하면(nvm 등) `npm prefix -g` 폴더에 있는 `pplx`의 절대 경로를 씁니다.
 
 딥리서치는 몇 분 걸립니다. `perplexity_research`는 기본 600초(`wait_seconds`)까지 기다리고, 그 안에 끝나지 않으면 `job_id`를 돌려줍니다.
 클라이언트의 도구 타임아웃이 더 짧다면 `wait_seconds`를 줄이거나 타임아웃을 늘리세요(Claude Code는 `MCP_TOOL_TIMEOUT`, 밀리초).
@@ -160,11 +196,11 @@ tool_timeout_sec = 3700   # 딥리서치 대기(최대 3600초)보다 길게
 MCP 클라이언트 없이 터미널에서도 씁니다.
 
 ```bash
-node src/index.ts status
-node src/index.ts search "질문"
-node src/index.ts research "조사 주제"
-node src/index.ts history "검색어"
-node src/index.ts logout [--wipe]
+pplx status
+pplx search "질문"
+pplx research "조사 주제"
+pplx history "검색어"
+pplx logout [--wipe]
 ```
 
 ## 데이터와 보안
@@ -181,7 +217,7 @@ node src/index.ts logout [--wipe]
 | `jobs/` | 딥리서치 작업 상태 (서버가 재시작돼도 결과를 복구) |
 | `account.json` | 요금제·모델 목록 캐시 |
 
-완전히 로그아웃하려면 `node src/index.ts logout --wipe`로 `login-profile/`과 `master.key`까지 지웁니다.
+완전히 로그아웃하려면 `pplx logout --wipe`로 `login-profile/`과 `master.key`까지 지웁니다.
 
 ## 동작 원리
 
