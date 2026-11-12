@@ -4,11 +4,9 @@ import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mc
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import * as z from "zod";
-import { log } from "./config.ts";
+import { PACKAGE_VERSION, log } from "./config.ts";
 import { localTime } from "./format.ts";
 import { Service, type ProgressFn } from "./service.ts";
-
-const VERSION = "0.1.0";
 
 const INSTRUCTIONS = `Perplexity through the user's own logged-in Perplexity account (no API key).
 - Not logged in? Call perplexity_login: a browser window opens and the user signs in; the session is saved and reused.
@@ -92,7 +90,7 @@ const maxCharsSchema = z
   .describe("Max characters of answer text in this response (long text is also capped to fit client limits; the rest stays readable via perplexity_history_get offset).");
 
 export function createServer(svc: Service): McpServer {
-  const server = new McpServer({ name: "perplexity-session", version: VERSION }, { instructions: INSTRUCTIONS });
+  const server = new McpServer({ name: "perplexity-session", version: PACKAGE_VERSION }, { instructions: INSTRUCTIONS });
 
   // New answers become new resources.
   svc.history.onAdd = () => {
@@ -347,5 +345,5 @@ export async function startServer(): Promise<void> {
   process.on("SIGINT", () => void shutdown("SIGINT"));
   process.on("SIGTERM", () => void shutdown("SIGTERM"));
   await server.connect(new StdioServerTransport());
-  log(`ready (v${VERSION}).`);
+  log(`ready (v${PACKAGE_VERSION}).`);
 }

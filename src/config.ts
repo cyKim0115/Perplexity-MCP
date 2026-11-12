@@ -1,5 +1,9 @@
+import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+
+// package.json sits one level above both src/ and the published dist/.
+export const PACKAGE_VERSION: string = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")).version;
 
 export const PPLX_ORIGIN = "https://www.perplexity.ai";
 export const API_VERSION = "2.18";

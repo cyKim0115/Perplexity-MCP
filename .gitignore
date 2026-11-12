@@ -3,3 +3,4 @@ node_modules/
 .DS_Store
 # runtime data lives in ~/.perplexity-session-mcp, never in the repo
 .perplexity-session-mcp/
+dist/

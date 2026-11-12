@@ -2,14 +2,14 @@
 // Entry point. `serve` (default) runs the MCP server over stdio; the other commands are
 // for setup and quick checks from a terminal.
 
-import { paths } from "./config.ts";
+import { PACKAGE_VERSION, paths } from "./config.ts";
 
 const [command = "serve", ...rest] = process.argv.slice(2);
 
 function usage(): void {
-  console.log(`perplexity-session-mcp — Perplexity via your own logged-in session (no API key)
+  console.log(`perplexity-session-mcp ${PACKAGE_VERSION} — Perplexity via your own logged-in session (no API key)
 
-Usage: node src/index.ts <command>
+Usage: pplx <command>   (or: npx perplexity-session-mcp <command>)
 
   serve                 Run the MCP server on stdio (default)
   login [--timeout s]   Open a browser window, sign in, and save the session
@@ -18,6 +18,7 @@ Usage: node src/index.ts <command>
   search <query>        Run one search and print the answer
   research <query>      Run one deep research and print the report
   history <query>       Search saved answers
+  version               Print the installed version
 
 Data directory: ${paths.dataDir}`);
 }
@@ -70,6 +71,11 @@ async function main(): Promise<void> {
       }
       return;
     }
+    case "version":
+    case "--version":
+    case "-v":
+      console.log(PACKAGE_VERSION);
+      return;
     case "help":
     case "--help":
     case "-h":

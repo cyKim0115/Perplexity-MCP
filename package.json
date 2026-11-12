@@ -4,7 +4,14 @@
   "description": "Perplexity MCP server that logs in with your own Perplexity account (browser session, no API key): search, deep research, and searchable answer history.",
   "type": "module",
   "license": "MIT",
-  "private": true,
+  "keywords": [
+    "mcp",
+    "perplexity",
+    "model-context-protocol",
+    "claude",
+    "codex",
+    "deep-research"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cyKim0115/Perplexity-MCP.git"
@@ -13,10 +20,20 @@
   "engines": {
     "node": ">=22.18.0"
   },
+  "bin": {
+    "pplx": "bin/pplx.js",
+    "perplexity-session-mcp": "bin/pplx.js"
+  },
+  "files": [
+    "bin/",
+    "dist/"
+  ],
   "scripts": {
-    "start": "node src/index.ts serve",
-    "login": "node src/index.ts login",
-    "status": "node src/index.ts status",
+    "start": "node bin/pplx.js serve",
+    "login": "node bin/pplx.js login",
+    "status": "node bin/pplx.js status",
+    "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.build.json",
+    "prepack": "npm run build",
     "typecheck": "tsc -p tsconfig.json",
     "test": "node --test test/*.test.ts"
   },
