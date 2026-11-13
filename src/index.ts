@@ -2,6 +2,7 @@
 // Entry point. `serve` (default) runs the MCP server over stdio; the other commands are
 // for setup and quick checks from a terminal.
 
+import { existsSync } from "node:fs";
 import { PACKAGE_VERSION, paths } from "./config.ts";
 
 const [command = "serve", ...rest] = process.argv.slice(2);
@@ -11,6 +12,9 @@ function usage(): void {
 
 Usage: pplx <command>   (or: npx perplexity-session-mcp <command>)
 
+  setup                 Register with the MCP clients on this machine (Claude Code, Codex, Cursor,
+                        Claude Desktop), then sign in if no session is saved.
+                        --dry-run shows what would change; --no-login skips signing in
   serve                 Run the MCP server on stdio (default)
   login [--timeout s]   Open a browser window, sign in, and save the session
   logout [--wipe]       Remove the saved session (--wipe also clears the login browser profile)
@@ -33,6 +37,29 @@ async function main(): Promise<void> {
     case "serve": {
       const { startServer } = await import("./server.ts");
       await startServer();
+      return;
+    }
+    case "setup": {
+      const { formatResults, launchSpec, registerClients } = await import("./setup.ts");
+      const dryRun = rest.includes("--dry-run");
+      const spec = launchSpec();
+      console.log(`MCP server command: ${[spec.command, ...spec.args].join(" ")}\n`);
+      const results = registerClients(spec, dryRun);
+      console.log(formatResults(results));
+      if (results.some((r) => r.status === "added")) {
+        console.log("\nRestart the clients (or reconnect with /mcp in Claude Code) to load the server.");
+      }
+      if (results.some((r) => r.status === "failed")) process.exitCode = 1;
+      if (dryRun || rest.includes("--no-login")) return;
+      if (existsSync(paths.sessionFile)) {
+        console.log(`\nA saved session already exists. Check it with "pplx status"; sign in again with "pplx login".`);
+        return;
+      }
+      console.log("\nNo saved session yet: opening the login window.");
+      const { interactiveLogin } = await import("./login.ts");
+      const out = await interactiveLogin({ timeoutMs: 300_000, onStatus: (m) => console.log(m) });
+      console.log(out.message);
+      if (!out.ok) process.exitCode = 1;
       return;
     }
     case "login": {
