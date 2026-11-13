@@ -31,14 +31,16 @@ Claude Code·Codex·Cursor·Claude Desktop 같은 MCP 클라이언트에 붙여 
 
 ```bash
 npm install -g perplexity-session-mcp
-pplx login
-claude mcp add perplexity-session -s user -- pplx
+pplx setup
 ```
 
-1. 설치하면 어느 폴더에서든 `pplx` 명령을 쓸 수 있습니다.
-2. `pplx login`을 실행하면 Chrome 창이 열립니다. Perplexity에 로그인하면 창이 저절로 닫힙니다.
-3. Claude Code에 MCP 서버로 등록합니다. Windows에서는 마지막 줄을 `-- cmd /c pplx`로 씁니다. 다른 클라이언트는 [클라이언트 등록](#mcp-클라이언트-등록)을 보세요.
+`pplx setup` 하나로 준비가 끝납니다.
 
+1. 이 PC에 있는 MCP 클라이언트(Claude Code·Codex·Cursor·Claude Desktop)를 찾아 MCP 서버로 등록합니다. 이미 등록된 곳은 건드리지 않고, JSON 설정을 고치기 전에는 `.bak` 백업을 남깁니다.
+2. 저장된 로그인이 없으면 Chrome 창을 엽니다. Perplexity에 로그인하면 창이 저절로 닫힙니다.
+3. 등록된 클라이언트를 다시 시작하면(Claude Code는 `/mcp`로 다시 연결) 도구가 보입니다.
+
+`pplx setup --dry-run`은 바꿀 내용만 보여 주고, `--no-login`은 로그인을 건너뜁니다. 직접 등록하려면 [클라이언트 등록](#mcp-클라이언트-등록)을 보세요.
 로그인은 클라이언트 안에서 `perplexity_login` 도구로 해도 같은 창이 열립니다.
 
 ### 내 계정 직접 관리하기
@@ -47,6 +49,7 @@ AI를 거치지 않고 터미널에서 직접 실행합니다. Claude Code 입�
 
 | 명령 | 하는 일 |
 | --- | --- |
+| `pplx setup` | MCP 클라이언트 등록 + 로그인 (다시 실행해도 안전) |
 | `pplx status` | 로그인 계정·요금제·남은 Pro Search·Research 횟수 |
 | `pplx login` | 로그인 창을 열어 다시 로그인 |
 | `pplx logout` | 저장된 세션 삭제 (`--wipe`면 로그인 프로필·암호화 키까지) |
@@ -107,7 +110,8 @@ Windows에서 세션 파일은 DPAPI로 현재 사용자에게 묶여 있어 **�
 
 ## MCP 클라이언트 등록
 
-`pplx`를 설치한 뒤 MCP 서버 명령으로 `pplx`를 씁니다. Windows에서는 `.cmd` 파일을 바로 실행하지 못하는 클라이언트가 많아서 `cmd /c pplx`로 띄웁니다.
+`pplx setup`이 아래 클라이언트를 자동으로 등록합니다. 이때 PATH에 기대지 않도록 node와 이 패키지 스크립트의 절대 경로를 적습니다.
+직접 등록할 때는 `pplx`를 설치한 뒤 MCP 서버 명령으로 `pplx`를 씁니다. Windows에서는 `.cmd` 파일을 바로 실행하지 못하는 클라이언트가 많아서 `cmd /c pplx`로 띄웁니다.
 [소스에서 실행](#소스에서-실행-개발용)할 때도 `npm link`를 했다면 똑같이 등록합니다.
 
 **Claude Code**
