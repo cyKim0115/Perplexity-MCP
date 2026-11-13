@@ -6,6 +6,7 @@ import { appendFileSync, copyFileSync, existsSync, readFileSync, realpathSync, w
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { PACKAGE_VERSION } from "./config.ts";
 
 export const SERVER_NAME = "perplexity-session";
 const PACKAGE_NAME = "perplexity-session-mcp";
@@ -27,11 +28,12 @@ export interface SetupResult {
 /**
  * How clients should start the server. Normally the absolute node binary plus this package's
  * bin/pplx.js, which needs no PATH lookup and no `cmd /c` on Windows. When setup itself runs from
- * the throwaway npx cache, register `npx -y perplexity-session-mcp@latest` instead.
+ * the throwaway npx cache, register `npx -y perplexity-session-mcp@<this version>` instead: pinned, so a
+ * later publish never runs in the clients until the user updates on purpose.
  */
 export function launchSpec(scriptPath = realpathSync(fileURLToPath(new URL("../bin/pplx.js", import.meta.url)))): LaunchSpec {
   if (/[\\/]_npx[\\/]/.test(scriptPath)) {
-    const npx = ["-y", `${PACKAGE_NAME}@latest`];
+    const npx = ["-y", `${PACKAGE_NAME}@${PACKAGE_VERSION}`];
     return isWindows ? { command: "cmd", args: ["/c", "npx", ...npx] } : { command: "npx", args: npx };
   }
   return { command: process.execPath, args: [scriptPath] };

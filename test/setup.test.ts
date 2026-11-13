@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { PACKAGE_VERSION } from "../src/config.ts";
 import { addToCodexConfig, addToJsonConfig, launchSpec, type LaunchSpec } from "../src/setup.ts";
 
 const spec: LaunchSpec = { command: "C:\\Program Files\\nodejs\\node.exe", args: ["C:\\Users\\me\\pplx\\bin\\pplx.js"] };
@@ -11,13 +12,13 @@ function scratch(): string {
   return mkdtempSync(join(tmpdir(), "pplx-setup-"));
 }
 
-test("launchSpec: absolute node + script normally, npx@latest from the npx cache", () => {
+test("launchSpec: absolute node + script normally, pinned npx version from the npx cache", () => {
   assert.deepEqual(launchSpec("/usr/lib/node_modules/perplexity-session-mcp/bin/pplx.js"), {
     command: process.execPath,
     args: ["/usr/lib/node_modules/perplexity-session-mcp/bin/pplx.js"],
   });
   const npx = launchSpec("C:\\Users\\me\\AppData\\Local\\npm-cache\\_npx\\abc\\node_modules\\perplexity-session-mcp\\bin\\pplx.js");
-  assert.deepEqual(npx.args.slice(-2), ["-y", "perplexity-session-mcp@latest"]);
+  assert.deepEqual(npx.args.slice(-2), ["-y", `perplexity-session-mcp@${PACKAGE_VERSION}`]);
   assert.equal(npx.command, process.platform === "win32" ? "cmd" : "npx");
 });
 
