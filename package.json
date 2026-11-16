@@ -26,7 +26,8 @@
   },
   "files": [
     "bin/",
-    "dist/"
+    "dist/",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "start": "node bin/pplx.js serve",
@@ -45,5 +46,8 @@
   "devDependencies": {
     "@types/node": "^24.19.2",
     "typescript": "^5.9.3"
+  },
+  "bugs": {
+    "url": "https://github.com/cyKim0115/Perplexity-MCP/issues"
   }
 }
