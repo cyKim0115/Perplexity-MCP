@@ -2,7 +2,7 @@
 
 npm 패키지 [`perplexity-session-mcp`](https://www.npmjs.com/package/perplexity-session-mcp)의 버전별 변경 내용입니다.
 
-## 0.2.0
+## 0.2.0 — 2026-11-16
 
 - `pplx setup` 추가: 이 PC의 MCP 클라이언트(Claude Code·Codex·Cursor·Claude Desktop)를 찾아 서버를 등록하고, 저장된 로그인이 없으면 로그인 창을 엽니다.
   - 이미 등록된 곳은 건드리지 않고, JSON 설정은 고치기 전에 `.bak` 백업을 남깁니다.
