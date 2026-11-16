@@ -4,7 +4,7 @@ export class NotLoggedInError extends Error {
   constructor(detail = "") {
     super(
       `Not logged in to Perplexity${detail ? ` (${detail})` : ""}. ` +
-        "Call the perplexity_login tool (or run `npm run login` in the server folder) and sign in in the browser window that opens.",
+        "Call the perplexity_login tool (or run `pplx login` in a terminal) and sign in in the browser window that opens.",
     );
     this.name = "NotLoggedInError";
   }
