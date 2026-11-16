@@ -3,6 +3,11 @@
 [![npm](https://img.shields.io/npm/v/perplexity-session-mcp)](https://www.npmjs.com/package/perplexity-session-mcp)
 [![CI](https://github.com/cyKim0115/Perplexity-MCP/actions/workflows/ci.yml/badge.svg)](https://github.com/cyKim0115/Perplexity-MCP/actions/workflows/ci.yml)
 [![M8ven Score](https://m8ven.ai/badge/mcp/cykim0115-perplexity-mcp-18de73?v=be73b853882bdef9f8cdbf747e561172)](https://m8ven.ai/mcp/cykim0115-perplexity-mcp-18de73?s=readme)
+[![License: MIT](https://img.shields.io/npm/l/perplexity-session-mcp)](LICENSE)
+[![Node](https://img.shields.io/node/v/perplexity-session-mcp)](package.json)
+![Windows · macOS · Linux](https://img.shields.io/badge/OS-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-20808d)
+![MCP stdio](https://img.shields.io/badge/MCP-stdio-20808d)
+![API key 불필요](https://img.shields.io/badge/API%20key-none-20808d)
 
 내 Perplexity 계정에 로그인한 **브라우저 세션**으로 검색·딥리서치를 쓰는 MCP 서버입니다. API 키가 필요 없고, Pro 요금제라면 Pro Search·Deep Research 할당량을 그대로 씁니다.
 Claude Code·Codex·Cursor·Claude Desktop 같은 MCP 클라이언트에 붙여 씁니다.
