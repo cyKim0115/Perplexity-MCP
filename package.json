@@ -1,6 +1,6 @@
 {
   "name": "perplexity-session-mcp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Perplexity MCP server that logs in with your own Perplexity account (browser session, no API key): search, deep research, and searchable answer history.",
   "type": "module",
   "license": "MIT",
