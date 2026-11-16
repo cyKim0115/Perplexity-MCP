@@ -1,5 +1,6 @@
 # Perplexity Session MCP
 
+[![npm](https://img.shields.io/npm/v/perplexity-session-mcp)](https://www.npmjs.com/package/perplexity-session-mcp)
 [![CI](https://github.com/cyKim0115/Perplexity-MCP/actions/workflows/ci.yml/badge.svg)](https://github.com/cyKim0115/Perplexity-MCP/actions/workflows/ci.yml)
 [![M8ven Score](https://m8ven.ai/badge/mcp/cykim0115-perplexity-mcp-18de73?v=be73b853882bdef9f8cdbf747e561172)](https://m8ven.ai/mcp/cykim0115-perplexity-mcp-18de73?s=readme)
 
@@ -10,7 +11,7 @@ Claude Code·Codex·Cursor·Claude Desktop 같은 MCP 클라이언트에 붙여 
 
 *stdio MCP 클라이언트로 `perplexity_search`를 실제로 호출한 결과입니다(5.8초). 스레드 주소는 가렸습니다.*
 
-[빠른 시작](#빠른-시작) · [로그인과 세션](#로그인과-세션) · [클라이언트 등록](#mcp-클라이언트-등록) · [도구](#도구) · [사용 예](#사용-예) · [데이터와 보안](#데이터와-보안) · [동작 원리](#동작-원리)
+[빠른 시작](#빠른-시작) · [터미널 명령](#터미널-명령-cli) · [로그인과 세션](#로그인과-세션) · [클라이언트 등록](#mcp-클라이언트-등록) · [도구](#도구) · [사용 예](#사용-예) · [데이터와 보안](#데이터와-보안) · [문제 해결](#문제-해결) · [제거](#제거) · [변경 기록](CHANGELOG.md)
 
 > **비공식 도구입니다.** Perplexity 공식 API가 아니라 웹 앱이 쓰는 내부 API를 호출하므로 사이트가 바뀌면 깨질 수 있습니다.
 > 이런 자동화 사용은 Perplexity 이용 약관에 어긋날 수 있으며, 계정 제한 등 사용에 따른 책임은 사용자 본인에게 있습니다.
@@ -43,18 +44,6 @@ pplx setup
 `pplx setup --dry-run`은 바꿀 내용만 보여 주고, `--no-login`은 로그인을 건너뜁니다. 직접 등록하려면 [클라이언트 등록](#mcp-클라이언트-등록)을 보세요.
 로그인은 클라이언트 안에서 `perplexity_login` 도구로 해도 같은 창이 열립니다.
 
-### 내 계정 직접 관리하기
-
-AI를 거치지 않고 터미널에서 직접 실행합니다. Claude Code 입력창에서는 앞에 `!`를 붙이면(`! pplx status`) 셸에서 바로 실행됩니다.
-
-| 명령 | 하는 일 |
-| --- | --- |
-| `pplx setup` | MCP 클라이언트 등록 + 로그인 (다시 실행해도 안전) |
-| `pplx status` | 로그인 계정·요금제·남은 Pro Search·Research 횟수 |
-| `pplx login` | 로그인 창을 열어 다시 로그인 |
-| `pplx logout` | 저장된 세션 삭제 (`--wipe`면 로그인 프로필·암호화 키까지) |
-| `pplx -v` | 설치된 버전 |
-
 ### 업데이트
 
 ```bash
@@ -62,6 +51,10 @@ npm install -g perplexity-session-mcp@latest
 ```
 
 CLI는 바로 새 버전이 됩니다. 이미 떠 있는 MCP 서버는 클라이언트를 다시 시작하거나 Claude Code에서 `/mcp`로 다시 연결하면 바뀝니다. 로그인 세션은 그대로 유지됩니다.
+무엇이 바뀌었는지는 [CHANGELOG.md](CHANGELOG.md)에 있습니다.
+
+**git clone으로 쓰던 경우**: 클론 경로(`node …/src/index.ts`)로 등록해 둔 설정은 그대로 동작하니 바꾸지 않아도 됩니다. 클론에서 `npm link`를 한 번 실행하면 `pplx` 명령도 쓸 수 있습니다.
+npm 설치로 옮기려면 각 클라이언트에서 기존 `perplexity-session` 등록을 지운 뒤(방법은 [제거](#제거)의 1단계) `pplx setup`을 실행하세요. setup은 이미 있는 등록을 고치지 않습니다.
 
 ### 소스에서 실행 (개발용)
 
@@ -73,6 +66,25 @@ npm link
 ```
 
 `npm link`를 하면 `pplx`가 이 폴더의 TypeScript 소스를 빌드 없이 바로 실행합니다. 그래서 `git pull`만 해도 새 코드가 반영됩니다.
+
+## 터미널 명령 (CLI)
+
+MCP 클라이언트 없이 터미널에서 직접 실행합니다. AI를 거치지 않으므로 로그인·계정 확인은 여기서 하는 게 가장 빠릅니다.
+Claude Code 입력창에서는 앞에 `!`를 붙이면(`! pplx status`) 셸에서 바로 실행됩니다.
+
+| 명령 | 하는 일 |
+| --- | --- |
+| `pplx setup` | MCP 클라이언트 등록 + 로그인 (다시 실행해도 안전). `--dry-run`, `--no-login` |
+| `pplx status` | 로그인 계정·요금제·남은 Pro Search·Research 횟수 |
+| `pplx login` | 로그인 창을 열어 다시 로그인 (`--timeout <초>`, 기본 300) |
+| `pplx logout` | 저장된 세션 삭제 (`--wipe`면 로그인 프로필·암호화 키까지) |
+| `pplx search "질문"` | 검색 한 번 실행하고 답변 출력 |
+| `pplx research "조사 주제"` | 딥리서치 한 번 실행하고 보고서 출력 (몇 분 걸림) |
+| `pplx history "검색어"` | 저장된 답변 검색 |
+| `pplx -v` | 설치된 버전 |
+| `pplx help` | 명령 목록과 데이터 폴더 위치 |
+
+`pplx`를 인자 없이 실행하면 MCP 서버(stdio)로 동작합니다. 클라이언트가 서버를 띄울 때 쓰는 방식이라 터미널에서 직접 실행할 일은 없습니다.
 
 ## 로그인과 세션
 
@@ -195,18 +207,6 @@ tool_timeout_sec = 3700   # 딥리서치 대기(최대 3600초)보다 길게
 
 긴 응답은 클라이언트 출력 한도(Claude Code 기본 약 25k 토큰)에 맞게 한 페이지(약 16k 토큰, 한글은 글자당 1토큰으로 계산)로 나뉩니다. 분량은 `max_chars`나 `PPLX_MAX_OUTPUT_TOKENS`로 조절합니다.
 
-## CLI
-
-MCP 클라이언트 없이 터미널에서도 씁니다.
-
-```bash
-pplx status
-pplx search "질문"
-pplx research "조사 주제"
-pplx history "검색어"
-pplx logout [--wipe]
-```
-
 ## 데이터와 보안
 
 모든 데이터는 `~/.perplexity-session-mcp/`(환경 변수 `PPLX_MCP_HOME`으로 변경)에 있습니다. 이 폴더는 저장소 밖이며 커밋되지 않습니다.
@@ -222,6 +222,22 @@ pplx logout [--wipe]
 | `account.json` | 요금제·모델 목록 캐시 |
 
 완전히 로그아웃하려면 `pplx logout --wipe`로 `login-profile/`과 `master.key`까지 지웁니다.
+
+### `pplx setup`이 바꾸는 파일
+
+`pplx setup`은 이 데이터 폴더 밖에 있는 **다른 앱의 설정 파일**에 서버 등록을 추가합니다. 실행 전에 `pplx setup --dry-run`으로 바꿀 곳을 먼저 볼 수 있습니다.
+
+| 클라이언트 | 바꾸는 곳 | 방식 |
+| --- | --- | --- |
+| Claude Code | 사용자 설정(모든 프로젝트) | `claude mcp add -s user` 명령으로 추가 |
+| Codex | `~/.codex/config.toml` (`CODEX_HOME`) | 파일 끝에 `[mcp_servers.perplexity-session]` 추가 |
+| Cursor | `~/.cursor/mcp.json` | `mcpServers`에 항목 추가, 원본은 `mcp.json.bak` |
+| Claude Desktop | `claude_desktop_config.json` | `mcpServers`에 항목 추가, 원본은 `.bak` |
+
+- 설정 폴더가 없는 클라이언트(설치하지 않은 앱)는 건너뜁니다.
+- 이미 `perplexity-session`이 등록돼 있으면 그 파일은 건드리지 않습니다. JSON 형식이 깨진 파일도 고치지 않고 실패로만 알립니다.
+- 등록하는 명령은 node 실행 파일과 설치된 `bin/pplx.js`의 절대 경로입니다. `npx`로 setup을 실행하면 `npx -y perplexity-session-mcp@<실행한 버전>`을 등록합니다.
+  `@latest`로 등록하지 않는 이유는, 나중에 올라온 버전이 확인 없이 로그인 세션에 접근하며 실행되는 일을 막기 위해서입니다. 새 버전은 사용자가 업데이트할 때만 들어옵니다.
 
 ## 동작 원리
 
@@ -248,6 +264,28 @@ Perplexity 웹 API(`/rest/sse/perplexity_ask` 등)는 Cloudflare 뒤에 있어 �
 | `PPLX_MAX_OUTPUT_TOKENS` | `16000` | 한 번에 돌려주는 답변 분량(대략의 토큰 수) |
 | `PPLX_DEBUG` | | `1`이면 원본 SSE를 `debug/`에 저장 |
 
+## 문제 해결
+
+| 증상 | 확인할 것 |
+| --- | --- |
+| `pplx`를 찾을 수 없다 | npm 전역 폴더가 PATH에 있어야 합니다. `npm prefix -g`로 위치를 보고, Windows는 그 폴더(보통 `%APPDATA%\npm`), macOS·Linux는 그 아래 `bin`을 PATH에 넣은 뒤 터미널을 새로 엽니다. |
+| 설치·실행 중 문법 오류나 `EBADENGINE` 경고 | `node -v`가 22.18 이상인지 확인합니다. |
+| 클라이언트에 도구가 보이지 않는다 | 클라이언트를 다시 시작합니다(Claude Code는 `/mcp`). `pplx setup --dry-run`이나 `claude mcp get perplexity-session`으로 등록 상태를 봅니다. |
+| Node 버전을 바꾼 뒤(nvm 등) 서버가 뜨지 않는다 | setup은 실행할 때의 node 경로를 적습니다. 새 Node에서 `npm install -g perplexity-session-mcp`를 다시 하고, 기존 등록을 지운 뒤([제거](#제거) 1단계) `pplx setup`을 다시 실행합니다. |
+| "Not logged in"이나 로그인이 풀렸다는 응답 | `pplx login`으로 다시 로그인합니다. 떠 있는 MCP 서버도 다음 호출부터 새 세션을 씁니다. |
+| Cloudflare 확인에서 계속 막힌다 | `PPLX_HEADLESS=0`으로 작업용 브라우저를 화면 밖 창으로 띄워 봅니다. |
+| 새 PC로 데이터 폴더를 옮겼더니 세션이 안 풀린다 | Windows 세션 파일은 그 PC 사용자에게 묶여 있습니다. 새 PC에서 `pplx login`을 한 번 실행합니다. |
+
+## 제거
+
+1. **클라이언트 등록 지우기**
+   - Claude Code: `claude mcp remove perplexity-session -s user`
+   - Codex: `~/.codex/config.toml`에서 `[mcp_servers.perplexity-session]` 블록을 지웁니다.
+   - Cursor·Claude Desktop: `mcp.json`·`claude_desktop_config.json`의 `mcpServers` 안에서 `"perplexity-session"` 항목을 지웁니다.
+2. **로그인 정보 지우기**: `pplx logout --wipe` (세션, 로그인 프로필, 암호화 키)
+3. **프로그램 지우기**: `npm uninstall -g perplexity-session-mcp` (클론으로 썼다면 `npm unlink -g perplexity-session-mcp` 후 폴더 삭제)
+4. **답변 기록까지 지우기**: 데이터 폴더 `~/.perplexity-session-mcp/`(Windows는 `%USERPROFILE%\.perplexity-session-mcp`)를 통째로 지웁니다.
+
 ## 개발
 
 ```bash
@@ -258,7 +296,20 @@ node scripts/parse-sse.ts <capture.sse>                        # PPLX_DEBUG=1로
 ```
 
 딥리서치는 하루 횟수가 적으니, 파서를 고칠 때는 새로 호출하기보다 저장해 둔 스트림으로 확인하세요.
-push와 PR마다 GitHub Actions가 Node 22·24에서 타입체크와 테스트를 돌립니다.
+push와 PR마다 GitHub Actions가 Node 22·24에서 타입체크·테스트·빌드를 돌립니다.
+
+### 배포 (관리자)
+
+npm 패키지에는 `bin/`과 컴파일된 `dist/`만 들어갑니다. Node가 `node_modules` 안의 `.ts`는 실행하지 않기 때문입니다. `npm publish`가 `prepack`에서 빌드를 먼저 돌립니다.
+
+1. [CHANGELOG.md](CHANGELOG.md)에 이번 버전의 변경 내용과 날짜를 적고 커밋합니다.
+2. `npm version <patch|minor|major>` — package.json 버전을 올리고 커밋과 `v<버전>` 태그를 만듭니다. 서버가 알리는 버전도 package.json에서 읽습니다.
+3. `npm publish` — 브라우저 인증(2FA)을 요구하면 Enter를 눌러 승인합니다.
+4. `npm view perplexity-session-mcp version`으로 새 버전이 보이면 `git push --follow-tags`로 커밋과 태그를 올립니다.
+
+- 새 패키지를 처음 올릴 때는 npm 계정 **이메일 인증**이 필요합니다. 인증 전에 받은 로그인으로는 계속 403이 나므로, 인증 후 `npm logout` → `npm login`을 다시 합니다.
+- 배포 직후 1~2분은 "being processed" 상태라 `npm view`에 이전 버전이나 임시 버전(`0.0.0-stage`)이 보일 수 있습니다.
+- README는 npm 배포가 끝난 뒤에 push합니다. 배포 전에 push하면 GitHub에는 아직 없는 기능의 설치 안내가 보입니다.
 
 ## 주의
 
